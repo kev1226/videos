@@ -1,0 +1,76 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.materias-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.materia-item {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.materia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.materia-actions {
+    display: flex;
+}
+
+.videos-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.video-item {
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.btn {
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+.btn-danger {
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+}
+
+.btn-success {
+    background-color: #5bc0de;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #337ab7;
+    color: #fff;
+    border: none;
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Videos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Materias</h1>
+        <ul class="materias-list">
+            {% for materia in materias %}
+                <li class="materia-item">
+                    <div class="materia-header">
+                        <span>{{ materia.nombre }}</span>
+                        <div class="materia-actions">
+                            <form action="{{ url_for('eliminar_materia', materia_id=materia.id) }}" method="get">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                            <form action="{{ url_for('modificar_materia', materia_id=materia.id) }}" method="post">
+                                <input type="text" name="nueva_nombre" placeholder="Nuevo nombre">
+                                <button type="submit" class="btn btn-primary">Modificar</button>
+                            </form>
+                        </div>
+                    </div>
+                    <ul class="videos-list">
+                        {% for video in materia.videos %}
+                            <li class="video-item">
+                                {{ video.titulo }} - {{ video.url }}
+                                <form action="{{ url_for('eliminar_video', video_id=video.id) }}" method="post">
+                                    <input type="hidden" name="materia_id" value="{{ materia.id }}">
+                                    <button type="submit" class="btn btn-danger">Eliminar Video</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                        <form action="{{ url_for('agregar_video', materia_id=materia.id) }}" method="post">
+                            <input type="text" name="titulo" placeholder="Título del Video">
+                            <input type="text" name="url" placeholder="URL del Video">
+                            <button type="submit" class="btn btn-success">Agregar Video</button>
+                        </form>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <form action="{{ url_for('agregar_materia') }}" method="post">
+            <input type="text" name="nombre_materia" placeholder="Nombre de la Materia">
+            <button type="submit" class="btn btn-success">Agregar Materia</button>
+        </form>
+    </div>
+</body>
+</html>
