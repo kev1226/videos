@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,47 +8,113 @@
     <title>Mis Videos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
     <div class="container">
         <h1>Materias</h1>
         <ul class="materias-list">
             {% for materia in materias %}
-                <li class="materia-item">
-                    <div class="materia-header">
-                        <span>{{ materia.nombre }}</span>
-                        <div class="materia-actions">
-                            <form action="{{ url_for('eliminar_materia', materia_id=materia.id) }}" method="get">
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
-                            <form action="{{ url_for('modificar_materia', materia_id=materia.id) }}" method="post">
-                                <input type="text" name="nueva_nombre" placeholder="Nuevo nombre">
-                                <button type="submit" class="btn btn-primary">Modificar</button>
-                            </form>
-                        </div>
-                    </div>
-                    <ul class="videos-list">
-                        {% for video in materia.videos %}
-                            <li class="video-item">
-                                {{ video.titulo }} - {{ video.url }}
-                                <form action="{{ url_for('eliminar_video', video_id=video.id) }}" method="post">
-                                    <input type="hidden" name="materia_id" value="{{ materia.id }}">
-                                    <button type="submit" class="btn btn-danger">Eliminar Video</button>
-                                </form>
-                            </li>
-                        {% endfor %}
-                        <form action="{{ url_for('agregar_video', materia_id=materia.id) }}" method="post">
-                            <input type="text" name="titulo" placeholder="Título del Video">
-                            <input type="text" name="url" placeholder="URL del Video">
-                            <button type="submit" class="btn btn-success">Agregar Video</button>
+            <li class="materia-item">
+                <div class="materia-header">
+                    <span>{{ materia.nombre }}</span>
+                    <div class="materia-actions">
+                        <!-- Botón para mostrar/ocultar el formulario de modificación de materia -->
+                        <button class="btn btn-primary modificar-materia-btn">Modificar Materia</button>
+
+                        <!-- Formulario de modificación de materia (inicialmente oculto) -->
+                        <form action="{{ url_for('modificar_materia', materia_id=materia.id) }}" method="post"
+                            class="modificar-materia-form" style="display: none;">
+                            <input type="text" name="nueva_nombre" placeholder="Nuevo nombre">
+                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
                         </form>
-                    </ul>
-                </li>
+
+                        <!-- Formulario para eliminar materia -->
+                        <form action="{{ url_for('eliminar_materia', materia_id=materia.id) }}" method="get">
+                            <button type="submit" class="btn btn-danger">Eliminar Materia</button>
+                        </form>
+                    </div>
+                </div>
+                <ul class="videos-list">
+                    {% for video in materia.videos %}
+                    <li class="video-item">
+                        {{ video.titulo }}
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/{{ video.url }}" frameborder="0"
+                                allowfullscreen></iframe>
+                        </div>
+
+                        <!-- Botón para mostrar/ocultar el formulario de edición de video -->
+                        <button class="btn btn-warning editar-btn" data-video-id="{{ video.id }}">Editar Video</button>
+
+                        <!-- Formulario de edición de video (inicialmente oculto) -->
+                        <form action="{{ url_for('index') }}" method="post" class="edit-form" style="display: none;">
+                            <input type="hidden" name="video_id" value="{{ video.id }}">
+                            <input type="text" name="nuevo_titulo" placeholder="Nuevo Título" value="{{ video.titulo }}"
+                                required>
+                            <input type="text" name="nueva_url" placeholder="Nueva URL" value="{{ video.url }}"
+                                required>
+                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                        </form>
+
+                        <!-- Formulario para eliminar video -->
+                        <form action="{{ url_for('eliminar_video', video_id=video.id) }}" method="post">
+                            <input type="hidden" name="materia_id" value="{{ materia.id }}">
+                            <button type="submit" class="btn btn-danger">Eliminar Video</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                    <form action="{{ url_for('agregar_video', materia_id=materia.id) }}" method="post">
+                        <input type="text" name="titulo" placeholder="Título del Video">
+                        <input type="text" name="url" placeholder="URL del Video">
+                        <button type="submit" class="btn btn-success">Agregar Video</button>
+                    </form>
+                </ul>
+            </li>
             {% endfor %}
+            <li class="materia-item">
+                <form action="{{ url_for('agregar_materia') }}" method="post">
+                    <input type="text" name="nombre_materia" placeholder="Nombre de la materia">
+                    <button type="submit" class="btn btn-success">Agregar Materia</button>
+                </form>
+            </li>
         </ul>
-        <form action="{{ url_for('agregar_materia') }}" method="post">
-            <input type="text" name="nombre_materia" placeholder="Nombre de la Materia">
-            <button type="submit" class="btn btn-success">Agregar Materia</button>
-        </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Agrega un evento de clic a todos los botones de editar video
+            var editarButtons = document.querySelectorAll('.editar-btn');
+            editarButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    // Encuentra el formulario de edición de video asociado
+                    var editForm = button.parentElement.querySelector('.edit-form');
+
+                    // Muestra u oculta el formulario de edición de video
+                    if (editForm.style.display === 'none' || editForm.style.display === '') {
+                        editForm.style.display = 'block';
+                    } else {
+                        editForm.style.display = 'none';
+                    }
+                });
+            });
+
+            // Agrega un evento de clic a todos los botones de modificar materia
+            var modificarButtons = document.querySelectorAll('.modificar-materia-btn');
+            modificarButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    // Encuentra el formulario de modificación de materia asociado
+                    var modificarForm = button.parentElement.querySelector('.modificar-materia-form');
+
+                    // Muestra u oculta el formulario de modificación de materia
+                    if (modificarForm.style.display === 'none' || modificarForm.style.display === '') {
+                        modificarForm.style.display = 'block';
+                    } else {
+                        modificarForm.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>

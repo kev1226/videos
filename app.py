@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from urllib.parse import parse_qs, urlparse
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videos.db'
@@ -21,8 +22,19 @@ def create_app():
         db.create_all()
 
 # Rutas y funciones de la aplicación
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        video_id = request.form.get('video_id')
+        nuevo_titulo = request.form.get('nuevo_titulo')
+        nueva_url = request.form.get('nueva_url')
+
+        if video_id and nuevo_titulo and nueva_url:
+            video = Video.query.get(video_id)
+            video.titulo = nuevo_titulo
+            video.url = nueva_url
+            db.session.commit()
+
     materias = Materia.query.all()
     return render_template('index.html', materias=materias)
 
@@ -60,10 +72,17 @@ def modificar_materia(materia_id):
 def agregar_video(materia_id):
     titulo = request.form.get('titulo')
     url = request.form.get('url')
-    if titulo and url:
-        nuevo_video = Video(titulo=titulo, url=url, materia_id=materia_id)
-        db.session.add(nuevo_video)
-        db.session.commit()
+    
+    # Extraer el sufijo del URL de YouTube
+    video_id = parse_qs(urlparse(url).query).get('v')
+    if video_id:
+        video_id = video_id[0]
+        
+        if titulo and video_id:
+            nuevo_video = Video(titulo=titulo, url=video_id, materia_id=materia_id)
+            db.session.add(nuevo_video)
+            db.session.commit()
+
     return redirect(url_for('index'))
 
 @app.route('/eliminar_video/<int:video_id>', methods=['POST'])
@@ -78,4 +97,3 @@ def eliminar_video(video_id):
 if __name__ == '__main__':
     create_app()
     app.run(debug=True)
-
